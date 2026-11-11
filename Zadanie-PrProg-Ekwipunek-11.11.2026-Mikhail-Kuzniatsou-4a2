@@ -1,0 +1,120 @@
+ekw = {
+    "miecz": {"il": 1, "wa": 5, "ce": 20},
+    "mikstura": {"il": 3, "wa": 1, "ce": 10}
+}
+gr = {"zloto": 50}
+maxw = 20
+
+def menu():
+    print("1. Pokaż przedmioty")
+    print("2. Dodaj przedmiot")
+    print("3. Użyj przedmiot")
+    print("4. Sprawdź przedmiot")
+    print("5. Sprzedaj przedmiot")
+    print("6. Wyjdź")
+
+def obw():
+    sum = 0
+    for prz, dan in ekw.items():
+        sum += dan["wa"] * dan["il"]
+    return sum
+
+def action1():
+    if not ekw:
+        print("Ekwipunek jest pusty.")
+    else:
+        print("Zawartość ekwipunku:")
+        for prz, dan in ekw.items():
+            print(prz, "Ilość:", dan["il"], "Waga:", dan["wa"], "Wartość:", dan["ce"])
+    print("Złoto:", gr["zloto"])
+    print("Waga:", obw(), "/", maxw)
+
+def action2():
+    naz = input("Podaj nazwę przedmiotu: ").strip().lower()
+    try:
+        il = int(input("Podaj ilość: "))
+    except ValueError:
+        print("Ilość musi być liczbą.")
+        return
+    if il <= 0:
+        print("Ilość musi być większa od zera.")
+        return
+    if naz in ekw:
+        wa = ekw[naz]["wa"]
+        ce = ekw[naz]["ce"]
+    else:
+        try:
+            wa = int(input("Podaj wagę przedmiotu: "))
+            ce = int(input("Podaj wartość przedmiotu: "))
+        except ValueError:
+            print("Waga i wartość muszą być liczbami.")
+            return
+        if wa <= 0 or ce <= 0:
+            print("Waga i wartość muszą być większe od zera.")
+            return
+    if obw() + wa * il > maxw:
+        print("Przekroczono maksymalną wagę ekwipunku.")
+        return
+    if gr["zloto"] < ce * il:
+        print("Nie masz wystarczającej ilości złota.")
+        return
+    gr["zloto"] -= ce * il
+    if naz in ekw:
+        ekw[naz]["il"] += il
+    else:
+        ekw[naz] = {"il": il, "wa": wa, "ce": ce}
+    print("Dodano przedmiot:", naz)
+
+def action3():
+    naz = input("Jaki przedmiot chcesz użyć? ").strip().lower()
+    if naz in ekw:
+        ekw[naz]["il"] -= 1
+        print("Użyto przedmiotu:", naz)
+        if ekw[naz]["il"] == 0:
+            del ekw[naz]
+            print("Przedmiot został usunięty z ekwipunku.")
+    else:
+        print("Nie masz takiego przedmiotu.")
+
+def action4():
+    naz = input("Jaki przedmiot chcesz sprawdzić? ").strip().lower()
+    if naz in ekw:
+        dan = ekw[naz]
+        print("Przedmiot jest w ekwipunku.")
+        print("Ilość:", dan["il"])
+        print("Waga:", dan["wa"])
+        print("Wartość:", dan["ce"])
+    else:
+        print("Nie masz takiego przedmiotu.")
+
+def action5():
+    naz = input("Jaki przedmiot chcesz sprzedać? ").strip().lower()
+    if naz in ekw:
+        ce = ekw[naz]["ce"] // 2
+        ekw[naz]["il"] -= 1
+        gr["zloto"] += ce
+        print("Sprzedano przedmiot:", naz)
+        print("Otrzymano złoto:", ce)
+        if ekw[naz]["il"] == 0:
+            del ekw[naz]
+    else:
+        print("Nie masz takiego przedmiotu.")
+
+while True:
+    menu()
+    ch = input("Wybierz opcję: ")
+    if ch == "1":
+        action1()
+    elif ch == "2":
+        action2()
+    elif ch == "3":
+        action3()
+    elif ch == "4":
+        action4()
+    elif ch == "5":
+        action5()
+    elif ch == "6":
+        print("Koniec programu.")
+        break
+    else:
+        print("Nieprawidłowy wybór.")
